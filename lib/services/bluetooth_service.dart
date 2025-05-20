@@ -8,6 +8,9 @@ class BluetoothService {
   StreamSubscription<DiscoveredDevice>? _scanSubscription;
   StreamSubscription<ConnectionStateUpdate>? _connection;
   StreamSubscription<List<int>>? _notifySubscription;
+  final _connectedDeviceController =
+      StreamController<DiscoveredDevice?>.broadcast();
+  Stream<DiscoveredDevice?> get connectedDeviceStream => _connectedDeviceController.stream;
 
   // Device management
   final List<DiscoveredDevice> _devices = [];
@@ -104,10 +107,12 @@ class BluetoothService {
 
         if (update.connectionState == DeviceConnectionState.connected) {
           _connectedDevice = device;
+          _connectedDeviceController.add(device); // Thêm dòng này
           _discoverServices(device.id);
         } else if (update.connectionState ==
             DeviceConnectionState.disconnected) {
           _connectedDevice = null;
+          _connectedDeviceController.add(null);
           _writeCharacteristic = null;
           _notifyCharacteristic = null;
         }

@@ -57,8 +57,7 @@ class _BleCommunicatorPageState extends State<BleCommunicatorPage> {
             ),
             const SizedBox(height: 16),
             StreamBuilder<DiscoveredDevice?>(
-              stream: bluetoothService.devicesStream
-                  .map((devices) => bluetoothService.connectedDevice),
+              stream: bluetoothService.connectedDeviceStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
                   return Column(

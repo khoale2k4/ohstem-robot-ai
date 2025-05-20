@@ -9,9 +9,11 @@ import 'package:robot_ai/navigation/app_router.dart';
 import 'package:robot_ai/services/bluetooth_service.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  final bluetoothService = BluetoothService();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => BluetoothServiceProvider(),
+    Provider<BluetoothService>.value(
+      value: bluetoothService,
       child: RobotAIApp(),
     ),
   );
