@@ -1,17 +1,59 @@
-# robot_ai
+# Robot AI - Ứng dụng điều khiển robot thông qua Bluetooth
 
-A new Flutter project.
+Ứng dụng Flutter sử dụng Flutter Hooks để quản lý state đơn giản, kết nối với robot thông qua giao tiếp Bluetooth.
 
-## Getting Started
+## Cấu trúc thư mục
 
-This project is a starting point for a Flutter application.
+```
+lib/
+  ├── constants/           # Các hằng số toàn cục
+  │   ├── colors.dart      # Màu sắc ứng dụng
+  │   └── app_content.dart # Nội dung cố định
+  │
+  ├── screens/             # Các màn hình
+  │   ├── connect_bluetooth_screen.dart  # Màn hình kết nối Bluetooth  
+  │   ├── main_navigation_screen.dart    # Màn hình navigation chính
+  │   ├── manual_control_screen.dart     # Điều khiển thủ công
+  │   ├── follow_human_screen.dart       # Chế độ theo dõi người
+  │   └── auto_navigation_screen.dart    # Chế độ điều hướng tự động
+  │
+  ├── widgets/             # Các widget dùng chung
+  │   └── joystick.dart    # Widget điều khiển joystick
+  │
+  ├── services/            # Các dịch vụ
+  │   └── bluetooth_service.dart  # Xử lý kết nối Bluetooth
+  │
+  ├── navigation/          # Xử lý navigation
+  │   └── app_routes.dart  # Định nghĩa routes
+  │
+  └── main.dart            # Điểm vào ứng dụng
+```
 
-A few resources to get you started if this is your first Flutter project:
+## Quản lý state bằng Flutter Hooks
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Ứng dụng sử dụng Flutter Hooks để quản lý state thay vì StatefulWidget. Ví dụ:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```dart
+// Thay vì StatefulWidget
+class MyWidget extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Khai báo state
+    final counter = useState(0);
+    
+    return ElevatedButton(
+      // Sử dụng state
+      onPressed: () => counter.value++,
+      child: Text('Count: ${counter.value}'),
+    );
+  }
+}
+```
+
+## Các tính năng
+
+1. **Kết nối Bluetooth**: Quét, kết nối đến thiết bị Bluetooth
+2. **Điều khiển thủ công**: Joystick, nút xoay
+3. **Theo dõi người**: Cài đặt khoảng cách, tốc độ theo dõi
+4. **Điều hướng tự động**: Học và lưu lộ trình, tự động di chuyển
 # ohstem-robot-ai
