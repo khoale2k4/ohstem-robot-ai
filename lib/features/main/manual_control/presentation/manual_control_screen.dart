@@ -126,16 +126,16 @@ class _ManualControlPageState extends State<ManualControlPage> {
           color: Colors.blueAccent,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: Colors.white, size: 28),
+        child: Icon(icon, color: Colors.white, size: 38),
       ),
     );
   }
 
   void _startRotation(String direction) {
     _sendRotationCommand(direction); // gọi ngay khi bắt đầu
-    _rotateTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
-      _sendRotationCommand(direction);
-    });
+    // _rotateTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+    //   _sendRotationCommand(direction);
+    // });
   }
 
   // void _sendMovementCommand() {
@@ -171,6 +171,8 @@ class _ManualControlPageState extends State<ManualControlPage> {
   void _stopRotation() {
     _rotateTimer?.cancel();
     _rotateTimer = null;
+
+    debugPrint('Sending rotation command: ${RobotInstructions.stop}');
 
     bluetoothService.sendMessage(RobotInstructions.stop).then((success) {
       if (!success) {
