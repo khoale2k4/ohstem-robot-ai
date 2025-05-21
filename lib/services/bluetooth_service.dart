@@ -201,9 +201,6 @@ class BluetoothService {
     try {
       final bytes = utf8.encode(message);
 
-      print("📤 Sending: $message");
-      print("🧾 Byte form: ${[0x15] + bytes}");
-
       await _ble.writeCharacteristicWithResponse(
         _writeCharacteristic!,
         value: [0x15] + bytes,

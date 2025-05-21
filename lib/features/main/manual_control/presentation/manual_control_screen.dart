@@ -2,8 +2,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:robot_ai/core/constants/intructions.dart';
 import 'package:robot_ai/features/main/manual_control/presentation/widgets/joysticks.dart';
 import 'package:robot_ai/features/main/manual_control/presentation/widgets/tracking_status.dart';
+import 'package:robot_ai/services/bluetooth_service.dart';
 
 class ManualControlPage extends StatefulWidget {
   const ManualControlPage({Key? key}) : super(key: key);
@@ -16,12 +19,28 @@ class _ManualControlPageState extends State<ManualControlPage> {
   Offset _leftJoystickValue = Offset.zero;
   final TrackingStatus _trackingStatus = TrackingStatus.tracking;
   Timer? _rotateTimer;
+  late dynamic bluetoothService;
+  final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    bluetoothService = Provider.of<BluetoothService>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manual Control'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bluetooth_disabled),
+            tooltip: 'Disconnect',
+            onPressed: _disconnectDevice,
+          ),
+        ],
       ),
       body: Container(
         padding: const EdgeInsets.all(16),
@@ -38,19 +57,42 @@ class _ManualControlPageState extends State<ManualControlPage> {
               ],
             ),
             const Spacer(),
-            LeftJoystick(
-              onDirectionChanged: (value) {
-                setState(() => _leftJoystickValue = value);
-                _sendMovementCommand();
-              },
-            ),
+            // LeftJoystick(
+            //   onDirectionChanged: (value) {
+            //     setState(() => _leftJoystickValue = value);
+            //     _sendMovementCommand();
+            //   },
+            // ),
             const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Column(
               children: [
-                _buildRotateButton(Icons.rotate_left, 'left'),
-                const SizedBox(width: 32),
-                _buildRotateButton(Icons.rotate_right, 'right'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildRotateButton(
+                        Icons.rotate_left, RobotInstructions.turnLeft),
+                    const SizedBox(width: 16),
+                    _buildRotateButton(Icons.arrow_upward_sharp,
+                        RobotInstructions.moveForward),
+                    const SizedBox(width: 16),
+                    _buildRotateButton(
+                        Icons.rotate_right, RobotInstructions.turnRight),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildRotateButton(
+                        Icons.arrow_back_outlined, RobotInstructions.moveLeft),
+                    const SizedBox(width: 16),
+                    _buildRotateButton(Icons.arrow_downward_sharp,
+                        RobotInstructions.moveBackward),
+                    const SizedBox(width: 16),
+                    _buildRotateButton(Icons.arrow_forward_outlined,
+                        RobotInstructions.moveRight),
+                  ],
+                ),
               ],
             ),
           ],
@@ -96,18 +138,56 @@ class _ManualControlPageState extends State<ManualControlPage> {
     });
   }
 
-  void _sendMovementCommand() {
-    debugPrint('Movement: ${_leftJoystickValue}');
-    // sendMessage(context, message, _ble, _writeCharacteristic)
-  }
+  // void _sendMovementCommand() {
+  //   final x = _leftJoystickValue.dx;
+  //   final y = _leftJoystickValue.dy;
+  //   final message = 'move:${x.toStringAsFixed(2)},${y.toStringAsFixed(2)}';
+
+  //   debugPrint('Sending movement command: $message');
+
+  //   bluetoothService.sendMessage(message).then((success) {
+  //     if (!success) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Failed to send movement command')),
+  //       );
+  //     }
+  //   });
+  // }
 
   void _sendRotationCommand(String direction) {
-    debugPrint('Rotate $direction');
-    // Gửi lệnh quay trái/phải
+    final message = direction;
+
+    debugPrint('Sending rotation command: $message');
+
+    bluetoothService.sendMessage(message).then((success) {
+      if (!success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to send rotation command')),
+        );
+      }
+    });
   }
 
   void _stopRotation() {
     _rotateTimer?.cancel();
     _rotateTimer = null;
+
+    bluetoothService.sendMessage(RobotInstructions.stop).then((success) {
+      if (!success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to send rotation command')),
+        );
+      }
+    });
+  }
+
+  Future<void> _disconnectDevice() async {
+    await bluetoothService.disconnect();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Disconnected from device')),
+      );
+      Navigator.pushNamed(context, '/');
+    }
   }
 }
