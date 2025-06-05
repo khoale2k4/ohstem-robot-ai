@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+// import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 class MiniCameraPreview extends StatefulWidget {
@@ -9,15 +9,16 @@ class MiniCameraPreview extends StatefulWidget {
 }
 
 class _MiniCameraPreviewState extends State<MiniCameraPreview> {
-  late CameraController _controller;
-  bool _isCameraInitialized = false;
+  // late CameraController _controller;
+  // bool _isCameraInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
+  /*
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
     _controller = CameraController(
@@ -30,10 +31,11 @@ class _MiniCameraPreviewState extends State<MiniCameraPreview> {
       setState(() => _isCameraInitialized = true);
     }
   }
+  */
 
   @override
   void dispose() {
-    _controller.dispose();
+    // _controller.dispose();
     super.dispose();
   }
 
@@ -58,10 +60,16 @@ class _MiniCameraPreviewState extends State<MiniCameraPreview> {
         borderRadius: BorderRadius.circular(8),
         child: Stack(
           children: [
-            if (_isCameraInitialized)
-              CameraPreview(_controller)
-            else
-              Center(child: CircularProgressIndicator()),
+            // if (_isCameraInitialized)
+            //   CameraPreview(_controller)
+            // else
+            //   Center(child: CircularProgressIndicator()),
+            Center(
+              child: Text(
+                'Camera',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
             Positioned(
               bottom: 4,
               right: 4,

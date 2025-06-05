@@ -8,6 +8,37 @@ allprojects {
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+    
+    // Fix namespace and package attribute issues
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                if (!hasProperty('namespace') || namespace == null || namespace.isEmpty()) {
+                    // Assign a default namespace based on the project name
+                    namespace = "com.example.${project.name}"
+                }
+            }
+        }
+        
+        // Fix AndroidManifest.xml package attribute issues (but not for main app)
+        if (project.name != 'app') {
+            project.tasks.whenTaskAdded { task ->
+                if (task.name.contains('processDebugManifest') || task.name.contains('processReleaseManifest')) {
+                    task.doFirst {
+                        File manifestFile = file("${projectDir}/src/main/AndroidManifest.xml")
+                        if (manifestFile.exists()) {
+                            String manifestContent = manifestFile.text
+                            if (manifestContent.contains('package=')) {
+                                manifestContent = manifestContent.replaceAll(/package="[^"]*"\s*/, "")
+                                manifestFile.write(manifestContent)
+                                println "Removed 'package' attribute from ${manifestFile}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 subprojects {
     project.evaluationDependsOn(":app")

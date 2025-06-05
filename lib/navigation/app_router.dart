@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:robot_ai/features/connect_bluetooth/presentation/connect_bluetooth.dart';
-import 'package:robot_ai/features/main/MainNavigation.dart';
+import 'package:robot_ai/features/connect_bluetooth/connect_bluetooth.dart';
+import 'package:robot_ai/screens/main_navigation_screen.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {

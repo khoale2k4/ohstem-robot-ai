@@ -6,14 +6,19 @@ import 'package:robot_ai/core/constants/contents.dart';
 import 'package:robot_ai/core/providers/bluetooth_service.dart';
 import 'package:robot_ai/navigation/app_router.dart' hide AppRouter, AppRoutes;
 import 'package:robot_ai/navigation/app_router.dart';
+import 'package:robot_ai/services/ai_model_service.dart';
 import 'package:robot_ai/services/bluetooth_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  final aiModelService = AIModelService();
   final bluetoothService = BluetoothService();
   runApp(
-    Provider<BluetoothService>.value(
-      value: bluetoothService,
+    MultiProvider(
+      providers: [
+        Provider<BluetoothService>.value(value: bluetoothService),
+        Provider<AIModelService>.value(value: aiModelService),
+      ],
       child: RobotAIApp(),
     ),
   );
@@ -32,7 +37,7 @@ class RobotAIApp extends StatelessWidget {
       darkTheme: _buildDarkTheme(),
       themeMode: ThemeMode.system,
       onGenerateRoute: AppRouter.generateRoute,
-      initialRoute: '/',
+      initialRoute: '/control',
     );
   }
 
